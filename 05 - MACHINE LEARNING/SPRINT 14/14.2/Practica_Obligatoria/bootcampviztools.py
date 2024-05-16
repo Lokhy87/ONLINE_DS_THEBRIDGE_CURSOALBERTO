@@ -274,3 +274,39 @@ def bubble_plot(df, col_x, col_y, col_size, scale = 1000):
     plt.show()
 
 
+# pinta_distribucion_categoricas2 SIN ERRORES
+
+def pinta_distribucion_categoricas2(df, columnas_categoricas, relativa=False, mostrar_valores=False):
+    num_columnas = len(columnas_categoricas)
+    num_filas = (num_columnas // 2) + (num_columnas % 2)
+
+    fig, axes = plt.subplots(num_filas, 2, figsize=(15, 5 * num_filas))
+    axes = axes.flatten() 
+
+    for i, col in enumerate(columnas_categoricas):
+        ax = axes[i]
+        serie = df[col].value_counts()
+        if relativa:
+            total = serie.sum()
+            serie = serie.apply(lambda x: x / total)
+            ax.set_ylabel('Frecuencia Relativa')
+        else:
+            ax.set_ylabel('Frecuencia')
+
+        sns.barplot(x=serie.index, y=serie.values, ax=ax, palette='viridis')
+        
+        ax.set_title(f'Distribución de {col}')
+        ax.set_xlabel('')
+        ax.tick_params(axis='x', rotation=45)
+
+        if mostrar_valores:
+            for p in ax.patches:
+                height = p.get_height()
+                ax.annotate(f'{height:.2f}', (p.get_x() + p.get_width() / 2., height), 
+                            ha='center', va='center', xytext=(0, 9), textcoords='offset points')
+
+    for j in range(i + 1, num_filas * 2):
+        axes[j].axis('off')
+
+    plt.tight_layout()
+    plt.show()
